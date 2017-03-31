@@ -11,8 +11,12 @@ import {
   Text,
   View
 } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
 export default class AwesomeProject extends Component {
+  componentDidMount() {
+    setTimeout(SplashScreen.hide, 2000);
+  }
   render() {
     return (
       <View style={styles.container}>

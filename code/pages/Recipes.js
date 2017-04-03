@@ -9,7 +9,7 @@ export default class Recipes extends Component {
         return (
             <View>
                 <Text>
-                    Test
+                    Recipes
                 </Text>
             </View>
         );

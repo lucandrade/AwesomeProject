@@ -12,7 +12,7 @@ import {
   View
 } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
-import Recipes from './code/pages/Recipes';
+import Navigation from './code/components/Navigation';
 
 export default class AwesomeProject extends Component {
   componentDidMount() {
@@ -20,7 +20,7 @@ export default class AwesomeProject extends Component {
   }
   render() {
     return (
-      <Recipes />
+      <Navigation />
     );
   }
 }

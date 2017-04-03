@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import {
-  Text,
-  View,
-  ListView
+    Text,
+    View,
+    TouchableHighlight,
+    ListView
 } from 'react-native';
-
-import LoremIpsum from 'lorem-hipsum';
 
 export default class Recipes extends Component {
     constructor(props) {
@@ -19,21 +18,16 @@ export default class Recipes extends Component {
         }
     }
 
-    addRecipe() {
-        this.props.addRecipe({
-            title: LoremIpsum({
-                count: 3,
-                units: 'words',
-            }),
-            text: LoremIpsum({
-                count: 1,
-                units: 'sentences',
-            })
-        });
-    }
-
     nextPage() {
         this.props.nextPage();
+    }
+
+    goToRecipe(data) {
+        this.props.navigator.push({
+            id: `recipe/${data.id}`,
+            title: data.title,
+            recipeId: data.id
+        });
     }
 
     render() {
@@ -57,7 +51,7 @@ export default class Recipes extends Component {
             <View>
                 <ListView style={{padding: 10}}
                     dataSource={dataSource}
-                    renderRow={this.renderRow}
+                    renderRow={this.renderRow.bind(this)}
                     renderSeparator={this.renderRowSeparator} />
                 <Text onPress={this.nextPage.bind(this)}>Carregar</Text>
             </View>
@@ -76,10 +70,12 @@ export default class Recipes extends Component {
             data.text;
 
         return (
-            <View style={{ paddingTop: 10, paddingBottom: 10 }}>
-                <Text style={titleStyle}>{data.title}</Text>
-                <Text>{text}</Text>
-            </View>
+            <TouchableHighlight onPress={this.goToRecipe.bind(this, data)}>
+                <View style={{ paddingTop: 10, paddingBottom: 10 }}>
+                    <Text style={titleStyle}>{data.title}</Text>
+                    <Text>{text}</Text>
+                </View>
+            </TouchableHighlight>
         );
     }
 

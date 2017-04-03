@@ -24,6 +24,10 @@ function fetchedRecipes(data) {
     return {type: constants.FETCHED_RECIPES, payload: data};
 }
 
+function fetchedRecipe(recipe) {
+    return {type: constants.FETCHED_RECIPE, payload: recipe};
+}
+
 export function fetchList() {
     return function(dispatch) {
         return setTimeout(() => {
@@ -39,6 +43,23 @@ export function fetchList() {
                 .catch(() => {
                     dispatch(setError());
                 });
+        }, 10);
+    }
+}
+
+export function fetchRecipe(recipeId, recipeList) {
+    return function(dispatch) {
+        return setTimeout(() => {
+            dispatch(setFetching());
+            setTimeout(() => {
+                const recipe = recipeList.filter(item => item.id === recipeId);
+
+                if (recipe.length > 0) {
+                    return dispatch(fetchedRecipe(recipe[0]));
+                }
+
+                return dispatch(setError());
+            }, 1000);
         }, 10);
     }
 }

@@ -13,6 +13,13 @@ const initialState = {
     error: null
 };
 
+function nextPage(state) {
+    current = page*itemsPerPage;
+    list = state.concat(fullList.slice(current, current+itemsPerPage));
+    page++;
+    return list;
+}
+
 export default function recipes(state = initialState, action) {
     switch (action.type) {
         case constants.ADD_RECIPE:
@@ -28,8 +35,7 @@ export default function recipes(state = initialState, action) {
             return {...state, error: true};
         case constants.FETCHED_RECIPES:
             fullList = action.payload;
-            list = state.list.concat(fullList.slice(page, page+itemsPerPage));
-            page++;
+            list = nextPage(state.list);
             return {
                 ...state,
                 list,
@@ -38,12 +44,18 @@ export default function recipes(state = initialState, action) {
                 fetched: true,
             };
         case constants.NEXT_PAGE_RECIPES:
-            current = page*itemsPerPage;
-            list = state.list.concat(fullList.slice(current, current+itemsPerPage));
-            page++;
+            list = nextPage(state.list);
             return {
                 ...state,
                 list
+            };
+        case constants.FETCHED_RECIPE:
+            return {
+                ...state,
+                fetching: false,
+                error: null,
+                fetched: true,
+                recipe: action.payload
             };
         default:
             return state;

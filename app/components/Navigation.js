@@ -11,6 +11,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import Recipes from '../pages/Recipes';
+import Recipe from '../pages/Recipe';
 import Login from '../pages/Login';
 import * as topbarActions from '../actions/topbarActions';
 import * as recipeActions from '../actions/recipeActions';
@@ -33,6 +34,11 @@ class Navigation extends Component {
 
     getInitialRoute() {
         return {
+            id: 'recipes',
+            title: 'Receitas'
+        };
+
+        return {
             id: 'login',
             title: 'Login'
         };
@@ -52,9 +58,11 @@ class Navigation extends Component {
 
     renderScene(route, navigator) {
         const { state, actions } = this.props;
-        switch (route.id) {
-            case 'recipes':
+        switch (true) {
+            case /recipes/.test(route.id):
                 return <Recipes navigator={navigator} {...state} {...actions} />;
+            case /recipe\/\d{0,5}/.test(route.id):
+                return <Recipe navigator={navigator} recipeId={route.recipeId} {...state} {...actions} />;
             default:
                 return <Login navigator={navigator} {...actions}  {...state}/>;
         }
@@ -89,7 +97,7 @@ class Navigation extends Component {
         return (
             <View>
                 <Text style={this.getTitleStyle()}>
-                    {title}
+                    {title.length > 20 ? title.substring(0, 20) + '...' : title}
                 </Text>
             </View>
         );
@@ -126,6 +134,14 @@ class Navigation extends Component {
         }
 
         return (
+            <Text
+                style={this.getLeftButtonStyle()}
+                onPress={navigator.pop}>
+                Voltar
+            </Text>
+        );
+
+        return (
             <Icon
                 name="chevron-left"
                 onPress={navigator.pop}
@@ -134,11 +150,19 @@ class Navigation extends Component {
     }
 
     getLeftButtonStyle() {
+        const style = this.getTitleStyle();
         const marginLeft = 10;
+        const marginTop = style.marginTop+2;
+        const fontSize = 18;
 
-        return Object.assign(this.getButtonStyle(), {
-            marginLeft
+        return Object.assign(style, {
+            marginLeft,
+            fontSize,
+            marginTop
         });
+        // return Object.assign(this.getButtonStyle(), {
+        //     marginLeft
+        // });
     }
 
     renderRightButton(route, navigator) {

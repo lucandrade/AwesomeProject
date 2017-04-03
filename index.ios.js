@@ -11,22 +11,16 @@ import {
   Text,
   View
 } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
+import Recipes from './code/pages/Recipes';
 
 export default class AwesomeProject extends Component {
+  componentDidMount() {
+    setTimeout(SplashScreen.hide, 2000);
+  }
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
+      <Recipes />
     );
   }
 }

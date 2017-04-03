@@ -6,6 +6,7 @@ import {
     TouchableHighlight,
     Platform
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import Recipes from '../pages/Recipes';
 import Login from '../pages/Login';
@@ -91,20 +92,27 @@ export default class Navigation extends Component {
 
     getItemsStyle() {
         const marginTop = Platform.OS !== 'ios' ? 0 : 20;
+        const color = 'white';
+        const fontSize = 20;
 
         return {
-            marginTop
+            marginTop,
+            color,
+            fontSize
         };
     }
 
     getTitleStyle() {
-        const color = 'white';
-        const fontSize = 20;
+        return Object.assign(this.getItemsStyle(), {
 
-        return Object.assign({
-            color,
+        });
+    }
+
+    getButtonStyle() {
+        const fontSize = 25;
+        return Object.assign(this.getItemsStyle(), {
             fontSize
-        }, this.getItemsStyle());
+        });
     }
 
     renderLeftButton(route, navigator) {
@@ -113,18 +121,19 @@ export default class Navigation extends Component {
         }
 
         return (
-            <TouchableHighlight
-                style={this.getLeftButtonStyle()}
-                onPress={navigator.pop}>
-                <Text>
-                    Voltar
-                </Text>
-            </TouchableHighlight>
+            <Icon
+                name="chevron-left"
+                onPress={navigator.pop}
+                style={this.getLeftButtonStyle()} />
         );
     }
 
     getLeftButtonStyle() {
-        return this.getItemsStyle();
+        const marginLeft = 10;
+
+        return Object.assign(this.getButtonStyle(), {
+            marginLeft
+        });
     }
 
     renderRightButton(route, navigator) {

@@ -12,8 +12,11 @@ export default class Recipes extends Component {
         super(props);
     }
 
-    componentWillMount() {
-        // this.props.setTitle('Recipes');
+    componentDidMount() {
+        const { recipes } = this.props;
+        if (!recipes.fetched && !recipes.fetching) {
+            this.props.fetchList();
+        }
     }
 
     addRecipe() {
@@ -29,20 +32,34 @@ export default class Recipes extends Component {
         });
     }
 
+    nextPage() {
+        this.props.nextPage();
+    }
+
     render() {
-        if (this.props.recipes.list.length < 1) {
-            return <Text onPress={this.addRecipe.bind(this)}>Aqui</Text>;
+        const { recipes } = this.props;
+
+        if (recipes.error !== null || (recipes.fetching && !recipes.fetched)) {
+            if (recipes.error !== null) {
+                return <Text>Erro</Text>;
+            }
+
+            return <Text>Carregando</Text>;
+        }
+
+        if (recipes.list.length < 1) {
+            return <Text>Lista Vazia</Text>;
         }
 
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-        const dataSource = ds.cloneWithRows(this.props.recipes.list);
+        const dataSource = ds.cloneWithRows(recipes.list);
         return (
             <View>
-                <Text onPress={this.addRecipe.bind(this)}>Aqui</Text>
                 <ListView style={{padding: 10}}
                     dataSource={dataSource}
                     renderRow={this.renderRow}
                     renderSeparator={this.renderRowSeparator} />
+                <Text onPress={this.nextPage.bind(this)}>Carregar</Text>
             </View>
         );
     }
@@ -54,10 +71,14 @@ export default class Recipes extends Component {
             fontSize: 20
         };
 
+        const text = data.text.length > 120 ?
+            data.text.substring(0, 120) + '...' :
+            data.text;
+
         return (
             <View style={{ paddingTop: 10, paddingBottom: 10 }}>
                 <Text style={titleStyle}>{data.title}</Text>
-                <Text>{data.text}</Text>
+                <Text>{text}</Text>
             </View>
         );
     }

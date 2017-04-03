@@ -40,10 +40,12 @@ class Navigation extends Component {
 
     getContainerStyle() {
         const paddingTop = this.barHeight;
+        const paddingBottom = 30;
         const backgroundColor = 'white';
 
         return {
             paddingTop,
+            paddingBottom,
             backgroundColor
         };
     }
@@ -52,7 +54,7 @@ class Navigation extends Component {
         const { state, actions } = this.props;
         switch (route.id) {
             case 'recipes':
-                return <Recipes navigator={navigator} {...actions} {...state} />;
+                return <Recipes navigator={navigator} {...state} {...actions} />;
             default:
                 return <Login navigator={navigator} {...actions}  {...state}/>;
         }
@@ -147,7 +149,7 @@ class Navigation extends Component {
 export default connect(state => ({
         state,
     }),
-    dispatch => ({
+    (dispatch) => ({
         actions: bindActionCreators(recipeActions, dispatch)
     })
 )(Navigation);

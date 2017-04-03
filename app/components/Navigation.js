@@ -7,11 +7,15 @@ import {
     Platform
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
 import Recipes from '../pages/Recipes';
 import Login from '../pages/Login';
+import * as topbarActions from '../actions/topbarActions';
+import * as recipeActions from '../actions/recipeActions';
 
-export default class Navigation extends Component {
+class Navigation extends Component {
     constructor(props) {
         super(props);
         this.barHeight = Platform.OS !== 'ios' ? 64 : 80;
@@ -29,7 +33,8 @@ export default class Navigation extends Component {
 
     getInitialRoute() {
         return {
-            id: 'login'
+            id: 'login',
+            title: 'Login'
         };
     }
 
@@ -44,15 +49,12 @@ export default class Navigation extends Component {
     }
 
     renderScene(route, navigator) {
+        const { state, actions } = this.props;
         switch (route.id) {
-            case 'login':
-                return <Login navigator={navigator} />;
-                break;
             case 'recipes':
-                return <Recipes navigator={navigator} />;
-                break;
+                return <Recipes navigator={navigator} {...actions} {...state} />;
             default:
-                return <Login navigator={navigator} />;
+                return <Login navigator={navigator} {...actions}  {...state}/>;
         }
     }
 
@@ -80,11 +82,12 @@ export default class Navigation extends Component {
         };
     }
 
-    renderTitle() {
+    renderTitle(route, navigator) {
+        const title = route.title || 'Carregando';
         return (
             <View>
                 <Text style={this.getTitleStyle()}>
-                    Cancel
+                    {title}
                 </Text>
             </View>
         );
@@ -140,3 +143,11 @@ export default class Navigation extends Component {
         return null;
     }
 }
+
+export default connect(state => ({
+        state,
+    }),
+    dispatch => ({
+        actions: bindActionCreators(recipeActions, dispatch)
+    })
+)(Navigation);

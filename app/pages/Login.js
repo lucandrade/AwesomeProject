@@ -6,11 +6,17 @@ import {
 } from 'react-native';
 
 export default class Login extends Component {
+    componentWillMount() {
+        // this.props.setTitle('Testando');
+    }
+    
     nav() {
         this.props.navigator.push({
-            id: 'recipes'
+            id: 'recipes',
+            title: 'Receitas'
         });
     }
+
     render() {
         return (
             <View>

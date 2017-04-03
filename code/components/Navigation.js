@@ -1,24 +1,45 @@
 import React, { Component } from 'react';
-import { Text, Navigator, TouchableHighlight } from 'react-native';
+import {
+    View,
+    Text,
+    Navigator,
+    TouchableHighlight,
+    Platform
+} from 'react-native';
 
 import Recipes from '../pages/Recipes';
 import Login from '../pages/Login';
 
 export default class Navigation extends Component {
+    constructor(props) {
+        super(props);
+        this.barHeight = Platform.OS !== 'ios' ? 64 : 80;
+    }
+
     render() {
-        const route = {
-            id: 'login'
-        };
-        const style = {
-            paddingTop: 100
-        };
         return (
             <Navigator
-                initialRoute={route}
-                sceneStyle={style}
+                initialRoute={this.getInitialRoute()}
+                sceneStyle={this.getContainerStyle()}
                 renderScene={this.renderScene.bind(this)}
                 navigationBar={this.renderNavigationBar()} />
         );
+    }
+
+    getInitialRoute() {
+        return {
+            id: 'login'
+        };
+    }
+
+    getContainerStyle() {
+        const paddingTop = this.barHeight;
+        const backgroundColor = 'white';
+
+        return {
+            paddingTop,
+            backgroundColor
+        };
     }
 
     renderScene(route, navigator) {
@@ -36,32 +57,77 @@ export default class Navigation extends Component {
 
     renderNavigationBar() {
         const config = {
-            Title: () => {
-                return <Text>Cancel</Text>;
-            },
-            LeftButton: this.renderBackButton,
-            RightButton: () => {
-                return null;
-            }
+            Title: this.renderTitle.bind(this),
+            LeftButton: this.renderLeftButton.bind(this),
+            RightButton: this.renderRightButton.bind(this)
         };
         return (
             <Navigator.NavigationBar
                 routeMapper={config}
-                style={{backgroundColor: 'gray'}} />
+                navigationStyles={Navigator.NavigationBar.StylesIOS}
+                style={this.getNavigationBarStyle()} />
         );
     }
 
-    renderBackButton(route, navigator) {
+    getNavigationBarStyle() {
+        const backgroundColor = '#00c6bf';
+        const height = this.barHeight;
+
+        return {
+            backgroundColor,
+            height
+        };
+    }
+
+    renderTitle() {
+        return (
+            <View>
+                <Text style={this.getTitleStyle()}>
+                    Cancel
+                </Text>
+            </View>
+        );
+    }
+
+    getItemsStyle() {
+        const marginTop = Platform.OS !== 'ios' ? 0 : 20;
+
+        return {
+            marginTop
+        };
+    }
+
+    getTitleStyle() {
+        const color = 'white';
+        const fontSize = 20;
+
+        return Object.assign({
+            color,
+            fontSize
+        }, this.getItemsStyle());
+    }
+
+    renderLeftButton(route, navigator) {
         if (navigator.getCurrentRoutes().length === 1) {
             return null;
         }
 
         return (
-            <TouchableHighlight onPress={navigator.pop}>
+            <TouchableHighlight
+                style={this.getLeftButtonStyle()}
+                onPress={navigator.pop}>
                 <Text>
                     Voltar
                 </Text>
             </TouchableHighlight>
         );
+    }
+
+    getLeftButtonStyle() {
+        return this.getItemsStyle();
+    }
+
+    renderRightButton(route, navigator) {
+        return null;
     }
 }

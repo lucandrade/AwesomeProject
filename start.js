@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import SplashScreen from 'react-native-splash-screen';
-import Navigation from './code/components/Navigation';
+import Navigation from './app/components/Navigation';
 
 export default class AwesomeProject extends Component {
     componentDidMount() {

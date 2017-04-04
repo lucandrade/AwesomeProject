@@ -9,6 +9,10 @@ import {
 export default class Recipe extends Component {
     constructor(props) {
         super(props);
+        this.elTop = {};
+        this.state = {
+            position: 0,
+        };
     }
 
     componentDidMount() {
@@ -17,6 +21,60 @@ export default class Recipe extends Component {
 
         if (!(recipe.id && recipe.id === recipeId)) {
             this.props.fetchRecipe(recipeId, recipes.list);
+        }
+    }
+
+    getElementTop(el) {
+        const me = this;
+
+        return new Promise((resolve, reject) => {
+            if (!me.refs[el]) {
+                return reject();
+            }
+
+            if (me.elTop[el]) {
+                return resolve(me.elTop[el]);
+            }
+
+            const element = me.refs[el];
+
+            return element.measure((x, y) => {
+                me.elTop[el] = y;
+                return resolve(me.elTop[el]);
+            });
+        });
+    }
+
+    goToElement(el) {
+        const me = this;
+
+        if (!me.refs[el]) {
+            return;
+        }
+
+        me.getElementTop(el)
+            .then(y => {
+                const scroll = me.refs['recipe-view'];
+
+                if (scroll) {
+                    scroll.scrollTo({x: 0, y, animated: true});
+                }
+
+                return null;
+            });
+    }
+
+    updatePosition(event) {
+        if (!this.elTop['text']) {
+            const me = this;
+            me.getElementTop('text')
+                .then(() => me.getElementTop('ingredients'));
+        }
+
+        if (event && event.nativeEvent && event.nativeEvent.contentOffset && event.nativeEvent.contentOffset.y) {
+            this.setState({
+                position: event.nativeEvent.contentOffset.y
+            });
         }
     }
 
@@ -40,7 +98,12 @@ export default class Recipe extends Component {
 
         return (
             <View>
-                <ScrollView style={this.getContainerStyle()}>
+                {this.renderNavigationButtons()}
+                <ScrollView
+                    ref='recipe-view'
+                    style={this.getContainerStyle()}
+                    onScroll={this.updatePosition.bind(this)}
+                    scrollEventThrottle={16}>
                     <Text style={this.getTitleStyle()}>
                         {recipe.title}
                     </Text>
@@ -48,13 +111,67 @@ export default class Recipe extends Component {
                         {recipe.date}
                     </Text>
                     {ingredients}
-                    <Text style={this.getSectionStyle()}>
+                    <Text ref='text' style={this.getSectionStyle()}>
                         MODO DE PREPARO
                     </Text>
                     <Text style={this.getTextStyle()}>
                         {recipe.text}
                     </Text>
                 </ScrollView>
+            </View>
+        );
+    }
+
+    getButtonNavigationStyle() {
+        return {
+            flex: 1,
+            borderBottomWidth: 1,
+            borderBottomColor: '#a09983',
+        };
+    }
+
+    renderNavigationButtons() {
+        const { position } = this.state;
+        const { text, ingredients } = this.elTop;
+
+        const containerStyle = {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+            alignSelf: 'stretch',
+        };
+
+        const fontStyle = {
+            color: '#514e44',
+            textAlign: 'center',
+            paddingTop: 10,
+            paddingBottom: 10,
+        };
+
+        const ingredientsStyle = this.getButtonNavigationStyle();
+        const textStyle = this.getButtonNavigationStyle();
+
+        if (text && position >= (text*0.6)) {
+            textStyle.borderBottomWidth = 3;
+        } else if (ingredients && position >= (ingredients*0.6)) {
+            ingredientsStyle.borderBottomWidth = 3;
+        }
+
+        return (
+            <View style={containerStyle}>
+                <View style={ingredientsStyle}>
+                    <Text
+                        onPress={this.goToElement.bind(this, 'ingredients')}
+                        style={fontStyle}>
+                        INGREDIENTES
+                    </Text>
+                </View>
+                <View style={textStyle}>
+                    <Text
+                        onPress={this.goToElement.bind(this, 'text')}
+                        style={fontStyle}>
+                        PREPARO
+                    </Text>
+                </View>
             </View>
         );
     }
@@ -69,7 +186,7 @@ export default class Recipe extends Component {
 
         return (
             <View>
-                <Text style={this.getSectionStyle()}>
+                <Text ref='ingredients' style={this.getSectionStyle()}>
                     INGREDIENTES
                 </Text>
                 <ListView
@@ -102,6 +219,7 @@ export default class Recipe extends Component {
     getContainerStyle() {
         return {
             padding: 15,
+            paddingTop: 25,
         };
     }
 

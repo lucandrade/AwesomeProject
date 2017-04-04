@@ -3,7 +3,8 @@ import {
     Text,
     ListView,
     ScrollView,
-    View
+    View,
+    Platform
 } from 'react-native';
 
 export default class Recipe extends Component {
@@ -38,8 +39,8 @@ export default class Recipe extends Component {
 
             const element = me.refs[el];
 
-            return element.measure((x, y) => {
-                me.elTop[el] = y;
+            return element.measure((x, y, w, h, px, py) => {
+                me.elTop[el] = y || py;
                 return resolve(me.elTop[el]);
             });
         });
@@ -277,7 +278,7 @@ export default class Recipe extends Component {
     getTextStyle() {
         return {
             paddingTop: 20,
-            paddingBottom: 10,
+            paddingBottom: Platform.OS !== 'ios' ? 80 : 50,
         };
     }
 }
